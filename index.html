@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+		<meta charset="utf-8">
+		<title>SVG CSS Rendering</title>
+		<style>
+			html, body, #map-canvas {
+				padding: 0;
+				margin: 0;
+				height: 100%;
+				width: 100%;
+			}
+
+			path.county {
+				stroke: rgb(190, 144, 53);
+		        stroke-width: 1pt;
+		        stroke-opacity: 0.35;
+		        fill: rgb(255, 255, 0);
+		        fill-opacity: 0.3;
+			}
+			
+			/* mouse hover animation */
+		    @keyframes highlight {
+		        100% {
+					fill-opacity: 1;
+		            fill: rgb(255, 255, 0);
+		        }
+		    }
+		
+		    @-webkit-keyframes highlight {
+		        100% {
+					fill-opacity: 1;
+		            fill: rgb(255, 255, 0);
+		        }
+		    }			
+			
+			path.county:hover {
+		        cursor: pointer;
+		        animation-duration: 0.2s;
+		        animation-name: highlight;
+		        animation-timing-function: linear;
+		        animation-fill-mode: forwards;
+		        -webkit-animation-duration: 0.2s;
+		        -webkit-animation-name: highlight;
+		        -webkit-animation-timing-function: linear;
+		        -webkit-animation-fill-mode: forwards;
+		        -webkit-svg-shadow: 0 0 7px #53BE12;
+    		}
+		</style>
+
+		<link rel="stylesheet" href="//js.arcgis.com/3.7/js/esri/css/esri.css">
+
+		<script>
+			var dojoConfig = {
+				async : true
+			};
+		</script>
+
+		<script src="//js.arcgis.com/3.7/"></script>
+
+		<script>
+			require(["dojo/dom-class", "esri/map", "esri/layers/FeatureLayer", "dojo/domReady!"], function(domClass, Map, FeatureLayer) {
+
+				var map = new Map("map-canvas", {
+					basemap : "gray",
+					center : [-98.5795, 39.828175], // long, lat
+					zoom : 5,
+					sliderStyle : "small"
+				});
+
+				var featureLayer = new FeatureLayer("http://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/USA_Counties/FeatureServer/0", {
+					styling : false
+				});
+				
+				featureLayer.on("graphic-draw", function(evt) {
+					evt.node.setAttribute("class", "county");
+				});
+				
+				if (featureLayer.surfaceType === "svg") {
+					console.log("svg found");
+				} else {
+					console.log("svg not found");
+				}
+
+				map.addLayer(featureLayer);
+			});
+
+		</script>
+	</head>
+	<body>
+		<div id="map-canvas"></div>
+	</body>
+</html>
+
